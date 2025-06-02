@@ -261,5 +261,7 @@ public class ManagerBot extends TelegramLongPollingBot {
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
         }
+        
+
     }
 }

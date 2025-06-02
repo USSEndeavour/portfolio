@@ -29,7 +29,28 @@ public class CashOfficeOperationController {
     @PostMapping("/add")
     @ResponseStatus(HttpStatus.CREATED)
     public CashOfficeOperation addCashOfficeOperation(@RequestBody CashOfficeOperation operation) {
-        return service.addCashOfficeOperation(operation);
+        return service.saveCashOfficeOperation(operation);
+    }
+
+    @PutMapping("/{id}")
+    public CashOfficeOperation updateCashOfficeOperation(@PathVariable Integer id, @RequestBody CashOfficeOperation operation) {
+        CashOfficeOperation cashOfficeOperation = null;
+        try {
+            cashOfficeOperation = (service.getCashOfficeOperationById(id)).get();
+            cashOfficeOperation.setCashOffice(operation.getCashOffice());
+            cashOfficeOperation.setOperationType(operation.getOperationType());
+            cashOfficeOperation.setOperationPasscode(operation.getOperationPasscode());
+            cashOfficeOperation.setClient(operation.getClient());
+            cashOfficeOperation.setCurrency(operation.getCurrency());
+            cashOfficeOperation.setOperationQuantity(operation.getOperationQuantity());
+            cashOfficeOperation.setOperationStatus(operation.getOperationStatus());
+            cashOfficeOperation.setRequestMessageId(operation.getRequestMessageId());
+            cashOfficeOperation.setRequestMessageGroupId(operation.getRequestMessageGroupId());
+            cashOfficeOperation.setRequestSenderTelegramId(operation.getRequestSenderTelegramId());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return service.saveCashOfficeOperation(cashOfficeOperation);
     }
 
     @DeleteMapping("/delete/{id}")

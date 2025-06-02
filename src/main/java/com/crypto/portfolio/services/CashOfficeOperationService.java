@@ -1,7 +1,6 @@
 package com.crypto.portfolio.services;
 
 import com.crypto.portfolio.entities.CashOfficeOperation;
-import com.crypto.portfolio.repositories.CashOfficeRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -19,7 +18,7 @@ public class CashOfficeOperationService {
         this.repository = repository;
     }
 
-    public CashOfficeOperation addCashOfficeOperation(CashOfficeOperation operation) {
+    public CashOfficeOperation saveCashOfficeOperation(CashOfficeOperation operation) {
         return repository.save(operation);
     }
 

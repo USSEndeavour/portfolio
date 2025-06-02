@@ -1,5 +1,6 @@
 package com.crypto.portfolio.web;
 
+import com.crypto.portfolio.utils.currencies.CurrencyTicker;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -37,7 +38,7 @@ public class CurrencyControllerTest {
     @BeforeEach
     public void setUp() {
         currency.setId(9);
-        currency.setTicker("EUR");
+        currency.setTicker(CurrencyTicker.EUR);
     }
 
     @Test

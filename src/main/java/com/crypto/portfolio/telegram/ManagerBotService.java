@@ -10,7 +10,6 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import java.util.HashMap;
 
 public interface ManagerBotService {
-//    public void registerNewUser(Long userId, String userName, String comment);
     public void handleUpdate(Update update);
     public boolean validateClient(User user);
     public boolean validateMessageIsPrivate(Message message);
@@ -27,9 +26,4 @@ public interface ManagerBotService {
     public com.crypto.portfolio.entities.User findUserByName(String name);
     public CashOfficeOperation findCashOfficeOperationById(Long id);
     public boolean validateUserByAnyRole(User user);
-//    public boolean validateCashOfficeManager(User user);
-//    public void requestCashInCode(Long managerId, Integer amount, String ticker);
-//    public void requestCashOutCode();
-//    public void sendCashInCode();
-//    public void sendCashOutCode();
 }
