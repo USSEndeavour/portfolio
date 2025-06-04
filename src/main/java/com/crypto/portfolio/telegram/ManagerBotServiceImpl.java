@@ -3,6 +3,7 @@ package com.crypto.portfolio.telegram;
 import com.crypto.portfolio.entities.CashOfficeOperation;
 import com.crypto.portfolio.entities.Currency;
 import com.crypto.portfolio.services.UserService;
+import com.crypto.portfolio.utils.cashofficeoperation.OperationStatus;
 import com.crypto.portfolio.utils.cashofficeoperation.OperationType;
 import com.crypto.portfolio.utils.currencies.CurrencyTicker;
 import com.crypto.portfolio.utils.user.UserRole;
@@ -37,6 +38,7 @@ public class ManagerBotServiceImpl implements ManagerBotService {
     private String getUserByNameUrl = "http://localhost:8080/users/userName/{userName}";
     private String postNewOperationUrl = "http://localhost:8080/cashofficeoperations/add";
     private String getCashOfficeOperationById = "http://localhost:8080/cashofficeoperations/{id}";
+    private String updateCashOfficeOperationById = "http://localhost:8080/cashofficeoperations/update/{id}";
 
     private String getCurrencyByTicker = "http://localhost:8080/currencies/ticker/{ticker}";
 
@@ -149,6 +151,7 @@ public class ManagerBotServiceImpl implements ManagerBotService {
         CashOfficeOperation cashOfficeOperation = new CashOfficeOperation();
         cashOfficeOperation.setOperationQuantity(new BigDecimal(requestParams.get("Amount")));
         cashOfficeOperation.setOperationType(operationType);
+        cashOfficeOperation.setOperationStatus(OperationStatus.PENDING);
         try {
             cashOfficeOperation.setCurrency(findCurrencyByTicker(requestParams.get("Ticker")));
         } catch (Exception e) {
@@ -265,5 +268,22 @@ public class ManagerBotServiceImpl implements ManagerBotService {
             System.err.println(e.getStackTrace());
         }
         return operation;
+    }
+
+    public boolean updateCashOfficeOperationById(Long id, CashOfficeOperation newOperation) {
+        boolean flag = false;
+        CashOfficeOperation operation = findCashOfficeOperationById(id);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        try {
+            ResponseEntity<CashOfficeOperation> operationResponseEntity = defaultClient.exchange(updateCashOfficeOperationById,
+                    HttpMethod.PUT, new HttpEntity<>(newOperation, headers),CashOfficeOperation.class, id);
+            if (operationResponseEntity.getStatusCode().is2xxSuccessful() && operationResponseEntity.getBody() != null)
+                flag = true;
+
+        } catch (Exception e) {
+            System.err.println(e.getStackTrace());
+        }
+        return flag;
     }
 }

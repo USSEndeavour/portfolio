@@ -1,6 +1,7 @@
 package com.crypto.portfolio.telegram;
 
 import com.crypto.portfolio.entities.CashOfficeOperation;
+import com.crypto.portfolio.utils.cashofficeoperation.OperationStatus;
 import com.crypto.portfolio.utils.cashofficeoperation.OperationType;
 import com.crypto.portfolio.utils.user.UserRole;
 import org.springframework.beans.factory.annotation.Value;
@@ -252,6 +253,11 @@ public class ManagerBot extends TelegramLongPollingBot {
         var senderId = operation.getRequestSenderTelegramId();
         var messageId = operation.getRequestMessageId();
 
+        operation.setOperationPasscode(code.toString());
+        operation.setOperationStatus(OperationStatus.IN_PROGRESS);
+
+        service.updateCashOfficeOperationById(operationId, operation);
+
         SendMessage sendMessage = SendMessage.builder()
                 .chatId(groupId.toString())
                 .replyToMessageId(Integer.parseInt(messageId.toString()))
@@ -261,7 +267,6 @@ public class ManagerBot extends TelegramLongPollingBot {
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
         }
-        
 
     }
 }

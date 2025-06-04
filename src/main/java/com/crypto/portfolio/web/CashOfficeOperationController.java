@@ -32,7 +32,8 @@ public class CashOfficeOperationController {
         return service.saveCashOfficeOperation(operation);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
     public CashOfficeOperation updateCashOfficeOperation(@PathVariable Integer id, @RequestBody CashOfficeOperation operation) {
         CashOfficeOperation cashOfficeOperation = null;
         try {

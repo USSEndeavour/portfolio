@@ -26,4 +26,5 @@ public interface ManagerBotService {
     public com.crypto.portfolio.entities.User findUserByName(String name);
     public CashOfficeOperation findCashOfficeOperationById(Long id);
     public boolean validateUserByAnyRole(User user);
+    public boolean updateCashOfficeOperationById(Long id, CashOfficeOperation newOperation);
 }
