@@ -32,6 +32,7 @@ public class User {
     @Column(name = "telegram_id", unique = true)
     private Long telegramId;
 
+    @JsonProperty("telegram_user_name")
     @Column(name = "telegram_user_name", unique = true)
     private String telegramUserName;
 

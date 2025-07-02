@@ -27,6 +27,8 @@ public class CashOfficeOperation {
     private OperationType operationType;
 
     // a value, provided by the cashier
+    @Column(name = "operation_passcode", unique = true)
+    @JsonProperty("operation_passcode")
     private String operationPasscode;
 
     @ManyToOne

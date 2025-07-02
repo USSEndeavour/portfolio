@@ -3,6 +3,7 @@ package com.crypto.portfolio.telegram;
 import com.crypto.portfolio.entities.CashOfficeOperation;
 import com.crypto.portfolio.utils.cashofficeoperation.OperationStatus;
 import com.crypto.portfolio.utils.cashofficeoperation.OperationType;
+import com.crypto.portfolio.utils.currencies.CurrencyTicker;
 import com.crypto.portfolio.utils.user.UserRole;
 import org.springframework.beans.factory.annotation.Value;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -82,14 +83,16 @@ public class ManagerBot extends TelegramLongPollingBot {
         if (message.isUserMessage()) {
             handlePrivateMessage(message);
 
+            // client's request message
         } else if (!message.isUserMessage() && service.getRequestBodyType(message)=="cashIn"
                 && service.validateUserCashInRequestMessageBodyIsValid(message)
                 && service.findUserByTelegramId(message.getFrom().getId()).getUserRole() == UserRole.CLIENT) {
             requestCashInConfirmation(message);
 
+            // cash office manager's message
         } else if (!message.isUserMessage() && service.validateUserByAnyRole(message.getFrom())
                 && service.findUserByTelegramId(message.getFrom().getId()).getUserRole() == UserRole.CASH_OFFICE_MANAGER) {
-            handleCashOfficeManagerCodeResponse(message);
+            handleCashOfficeManagerMessage(message);
 
         } else if (!message.isUserMessage() && !service.validateClient(message.getFrom())) {
             replyMessage(message, "user ID: " + message.getFrom().getId() + "\ngroup ID: "
@@ -246,22 +249,63 @@ public class ManagerBot extends TelegramLongPollingBot {
 
     public void handleCashOfficeManagerCodeResponse(Message message) {
         Long code = service.parseCashOfficeManagerResponse(message.getText());
-        System.out.println((message.getReplyToMessage().getText()).replace("\n", " ").split(":")[1].split(" ")[0]);
-        var operationId = Long.parseLong((message.getReplyToMessage().getText()).replace("\n", " ").split(":")[1].split(" ")[0]);
-        CashOfficeOperation operation = service.findCashOfficeOperationById(operationId);
-        var groupId = operation.getRequestMessageGroupId();
-        var senderId = operation.getRequestSenderTelegramId();
-        var messageId = operation.getRequestMessageId();
+        if (service.validateCashOfficeOperationPasscodeAlreadyExists(code.toString())) {
+            replyMessage(message, " the operation with the code provided already exists");
+        } else {
+            var operationId = Long.parseLong((message.getReplyToMessage().getText())
+                    .replace("\n", " ").split(":")[1].split(" ")[0]);
+            CashOfficeOperation operation = service.findCashOfficeOperationById(operationId);
+            var groupId = operation.getRequestMessageGroupId();
+            var messageId = operation.getRequestMessageId();
 
-        operation.setOperationPasscode(code.toString());
-        operation.setOperationStatus(OperationStatus.IN_PROGRESS);
+            operation.setOperationPasscode(code.toString());
+            operation.setOperationStatus(OperationStatus.IN_PROGRESS);
+
+            service.updateCashOfficeOperationById(operationId, operation);
+
+            SendMessage sendMessage = SendMessage.builder()
+                    .chatId(groupId.toString())
+                    .replyToMessageId(Integer.parseInt(messageId.toString()))
+                    .text(code.toString()).build();
+            try {
+                execute(sendMessage);
+            } catch (TelegramApiException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public void handleCashOfficeManagerMessage(Message message) {
+        if (message.getText().split(" ")[0].equalsIgnoreCase("код")) {
+            handleCashOfficeManagerCodeResponse(message);
+        } else if (message.getText().split(" ")[0].equalsIgnoreCase(ManagerBotServiceImpl
+                .cashInConfirmation.split(" ")[0])) {
+            handleCashOfficeOperationOperationConfirmation(message);
+        }
+    }
+
+    public void handleCashOfficeOperationOperationConfirmation(Message message) {
+        HashMap<String, String> map = service.parseCashOfficeManagerOperationConfirmation(message.getText());
+        Integer amount = Integer.parseInt(map.get("Amount"));
+        CurrencyTicker ticker = CurrencyTicker.valueOf(map.get("Ticker"));
+        String passcode = map.get("Passcode");
+
+
+        CashOfficeOperation operation = service.findCashOfficeOperationByOperationPasscode(passcode);
+        var groupId = operation.getRequestMessageGroupId();
+        var messageId = operation.getRequestMessageId();
+        long operationId = operation.getId();
+
+        operation.setOperationQuantity(BigDecimal.valueOf(amount));
+        operation.setOperationStatus(OperationStatus.COMPLETED);
 
         service.updateCashOfficeOperationById(operationId, operation);
 
         SendMessage sendMessage = SendMessage.builder()
                 .chatId(groupId.toString())
                 .replyToMessageId(Integer.parseInt(messageId.toString()))
-                .text(code.toString()).build();
+                .text("" + operation.getOperationType() + " " + operation.getOperationQuantity()
+                        + " по коду: " + operation.getOperationPasscode()).build();
         try {
             execute(sendMessage);
         } catch (TelegramApiException e) {

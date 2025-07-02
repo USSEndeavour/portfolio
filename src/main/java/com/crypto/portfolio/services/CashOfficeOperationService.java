@@ -26,6 +26,10 @@ public class CashOfficeOperationService {
         return repository.findById(id);
     }
 
+    public Optional<CashOfficeOperation> getCashOfficeOperationByOperationPasscode(String operationPasscode) {
+        return repository.findByOperationPasscode(operationPasscode);
+    }
+
     public void deleteCashOfficeOperationById(Integer id) {
         repository.deleteById(id);
     }

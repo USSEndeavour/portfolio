@@ -5,6 +5,7 @@ import java.lang.Iterable;
 
 import com.crypto.portfolio.utils.currencies.CurrencyTicker;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -34,11 +35,15 @@ public class CurrencyController {
 
     @PostMapping("/add")
     @ResponseStatus(HttpStatus.CREATED)
-    public void addCurrency(@RequestBody Currency currency){
-        service.addCurrency(currency);
+    public Currency addCurrency(@RequestBody Currency currency) {
+        if (service.getCurrencyByTicker(currency.getTicker()) != null) {
+            return HttpStatus.CONFLICT;
+        }
+        return service.addCurrency(currency);
     }
 
     @DeleteMapping("delete/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCurrency(@PathVariable Integer id){
         service.deleteCurrencyById(id);
     }

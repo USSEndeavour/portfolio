@@ -20,8 +20,8 @@ public class CurrencyService {
         this.repository = repository;
     }
 
-    public void addCurrency(Currency currency) {
-        repository.save(currency);
+    public Currency addCurrency(Currency currency) {
+        return repository.save(currency);
     }
 
     public Optional<Currency> getCurrencyById(Integer id) {

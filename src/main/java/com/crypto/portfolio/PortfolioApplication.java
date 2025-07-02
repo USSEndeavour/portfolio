@@ -14,5 +14,4 @@ public class PortfolioApplication {
 	public static void main(String[] args) throws TelegramApiException {
 		SpringApplication.run(PortfolioApplication.class, args);
 	}
-
 }

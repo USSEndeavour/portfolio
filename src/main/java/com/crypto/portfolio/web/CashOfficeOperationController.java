@@ -22,8 +22,13 @@ public class CashOfficeOperationController {
     }
 
     @GetMapping("/{id}")
-    public Optional<CashOfficeOperation> getCashOfficeOperation(@PathVariable Integer id) {
+    public Optional<CashOfficeOperation> getCashOfficeOperationById(@PathVariable Integer id) {
         return service.getCashOfficeOperationById(id);
+    }
+
+    @GetMapping("/passcode/{passCode}")
+    public Optional<CashOfficeOperation> getCashOfficeOperationByOperationPasscode(@PathVariable String passCode) {
+        return service.getCashOfficeOperationByOperationPasscode(passCode);
     }
 
     @PostMapping("/add")

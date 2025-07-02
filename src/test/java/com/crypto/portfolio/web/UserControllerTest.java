@@ -63,29 +63,29 @@ public class UserControllerTest {
 
     @Test
     public void testAddAndGetHolder() throws Exception{
-        mvc.perform(post("/holders/add")
+        mvc.perform(post("/users/add")
                 .content(objectMapper.writeValueAsString(user))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
-        this.mvc.perform(get("/holders/20"))
+        this.mvc.perform(get("/users/20"))
                 .andExpect(status().isOk())
-                .andExpect(content().json("{\"name\":\"Richard\", \"comment\":\"The Cat\"}"))
+                .andExpect(content().json("{\"user_name\":\"Richard\", \"comment\":\"The Cat\"}"))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
     @Test
     public void testDeleteHolderById() throws Exception {
-        mvc.perform(delete("/holders/delete/20"))
+        mvc.perform(delete("/users/delete/20"))
                 .andExpect(status().isNoContent());
     }
 
     @Test
     public void testGetHolders() throws Exception {
-        mvc.perform(get("/holders"))
+        mvc.perform(get("/users"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().json("[{\"name\":\"Richard\", " +
-                        "\"comment\":\"The Cat\"}, {\"name\":\"Levi\", \"comment\":\"Strauss\"}]"));
+                .andExpect(content().json("[{\"user_name\":\"Richard\", " +
+                        "\"comment\":\"The Cat\"}, {\"user_name\":\"Levi\", \"comment\":\"Strauss\"}]"));
     }
 }

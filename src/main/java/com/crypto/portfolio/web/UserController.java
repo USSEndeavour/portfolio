@@ -33,14 +33,32 @@ public class UserController {
     }
 
     @GetMapping("/userName/{userName}")
-    public Optional<User> getHolderByTelegramId(@PathVariable String userName) {
+    public Optional<User> getHolderByUserName(@PathVariable String userName) {
         return service.getUserByUserName(userName);
     }
 
     @PostMapping("/add")
     @ResponseStatus(HttpStatus.CREATED)
     public void createHolder(@RequestBody User user) {
-        service.addUser(user);
+        service.saveUser(user);
+    }
+
+    @PutMapping("/update/{id}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public User updateHolder(@PathVariable Integer id, @RequestBody User user) {
+        User userObject = null;
+        try {
+            userObject = (service.getUserById(id)).get();
+            userObject.setName(user.getName());
+            userObject.setTelegramId(user.getTelegramId());
+            userObject.setTelegramUserName(user.getTelegramUserName());
+            userObject.setComment(user.getComment());
+            userObject.setUserRole(user.getUserRole());
+            userObject.setTelegramGroupId(user.getTelegramGroupId());
+        } catch (Exception e) {
+            System.err.println(e.getStackTrace());
+        }
+        return service.saveUser(userObject);
     }
 
     @GetMapping

@@ -19,6 +19,7 @@ import org.telegram.telegrambots.meta.api.objects.User;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.function.Predicate;
 
 @Service
 public class ManagerBotServiceImpl implements ManagerBotService {
@@ -38,6 +39,7 @@ public class ManagerBotServiceImpl implements ManagerBotService {
     private String getUserByNameUrl = "http://localhost:8080/users/userName/{userName}";
     private String postNewOperationUrl = "http://localhost:8080/cashofficeoperations/add";
     private String getCashOfficeOperationById = "http://localhost:8080/cashofficeoperations/{id}";
+    private String getCashOfficeOperationByPasscode = "http://localhost:8080/cashofficeoperations/passcode/{passCode}";
     private String updateCashOfficeOperationById = "http://localhost:8080/cashofficeoperations/update/{id}";
 
     private String getCurrencyByTicker = "http://localhost:8080/currencies/ticker/{ticker}";
@@ -45,6 +47,8 @@ public class ManagerBotServiceImpl implements ManagerBotService {
     static String cashInRequestTemplate = "\n\"Прошу код на занос: СУММА, ВАЛЮТА, ГОРОД\"";
     static String cashOutRequestTemplate = "\n\"Прошу код на выдачу: СУММА, ВАЛЮТА, ГОРОД\"";
     static String cashOfficeGroupName = "CashOfficeManagerGroup";
+    static String cashInConfirmation = "занесли СУММА по коду КОД";
+    static String cashOutConfirmation = "выдали СУММА по коду КОД";
 
     @Override
     public void handleUpdate(Update update) {}
@@ -126,20 +130,34 @@ public class ManagerBotServiceImpl implements ManagerBotService {
         return flag;
     }
 
-    public boolean validateRequestCurrencyTickerIsValid(Message message) {
+    public Predicate<String> tickerIsValid = (ticker) -> {
         boolean flag = false;
-        HashMap<String, String> userRequest = parseUserRequest(message.getText());
         try {
-            flag = !(findCurrencyByTicker(userRequest.get("Ticker")).equals(null));
+            flag = !(findCurrencyByTicker(ticker).equals(null));
         } catch (Exception e) {
             e.printStackTrace();
         }
         return flag;
+    };
+
+    public Predicate<String> operationCodeIsValid = (code) -> {
+        boolean flag = false;
+        try {
+            flag = !(findCurrencyByTicker(code).equals(null));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return flag;
+    };
+
+    public boolean validateRequestCurrencyTickerIsValid(Message message, Predicate<String> predicate) {
+        HashMap<String, String> userRequest = parseUserRequest(message.getText());
+        return predicate.test(userRequest.get("Ticker"));
     }
 
     public boolean validateUserCashInRequestMessageBodyIsValid(Message message) {
         boolean flag = validateRequestBodyNotNull(message) && validateClient(message.getFrom())
-                && validateRequestAmountIsValid(message) && validateRequestCurrencyTickerIsValid(message);
+                && validateRequestAmountIsValid(message) && validateRequestCurrencyTickerIsValid(message,tickerIsValid);
         return flag;
     }
 
@@ -195,6 +213,22 @@ public class ManagerBotServiceImpl implements ManagerBotService {
             System.err.println(e.getStackTrace());
         }
         return code;
+    }
+
+    public HashMap<String, String> parseCashOfficeManagerOperationConfirmation(String confirmation) {
+        HashMap<String, String> map = new HashMap<>();
+        try {
+            String[] parameters = confirmation.split(" ");
+            String amount = parameters[1];
+            String ticker = parameters[2].trim().toUpperCase();
+            String passcode = parameters[5];
+            map.put("Amount", amount);
+            map.put("Ticker", ticker);
+            map.put("Passcode", passcode);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+        return map;
     }
 
     public com.crypto.portfolio.entities.User findUserByTelegramId(Long id) {
@@ -270,9 +304,30 @@ public class ManagerBotServiceImpl implements ManagerBotService {
         return operation;
     }
 
+    public CashOfficeOperation findCashOfficeOperationByOperationPasscode(String passcode) {
+        CashOfficeOperation operation = new CashOfficeOperation();
+        try {
+            ResponseEntity<CashOfficeOperation> operationResponseEntity = defaultClient
+                    .exchange(getCashOfficeOperationByPasscode, HttpMethod.GET, null,
+                            CashOfficeOperation.class, passcode);
+            if (operationResponseEntity.getStatusCode().is2xxSuccessful() && operationResponseEntity.getBody() != null) {
+                operation = operationResponseEntity.getBody();
+            } else {
+                operation = null;
+            }
+        } catch (Exception e) {
+            System.err.println(e.getStackTrace());
+        }
+        return operation;
+    }
+
+    public boolean validateCashOfficeOperationPasscodeAlreadyExists(String passcode) {
+        CashOfficeOperation operation = findCashOfficeOperationByOperationPasscode(passcode);
+        return operation !=null;
+    }
+
     public boolean updateCashOfficeOperationById(Long id, CashOfficeOperation newOperation) {
         boolean flag = false;
-        CashOfficeOperation operation = findCashOfficeOperationById(id);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         try {

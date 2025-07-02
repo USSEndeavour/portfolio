@@ -19,8 +19,8 @@ public class UserService {
         this.repository = repository;
     }
 
-    public void addUser(User user){
-        repository.save(user);
+    public User saveUser(User user){
+        return repository.save(user);
     }
 
     public Optional<User> getUserById(Integer id) {
