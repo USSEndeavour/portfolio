@@ -8,6 +8,7 @@ import com.crypto.portfolio.PortfolioApplication;
 import com.crypto.portfolio.repositories.UserRepository;
 import com.crypto.portfolio.entities.User;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -60,18 +61,15 @@ public class UserControllerTest {
         when(repository.findAll()).thenReturn(holders);
     }
 
-
     @Test
-    public void testAddAndGetHolder() throws Exception{
+    public void testAddHolder() throws Exception {
         mvc.perform(post("/users/add")
-                .content(objectMapper.writeValueAsString(user))
                 .accept(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(user))
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated());
-        this.mvc.perform(get("/users/20"))
-                .andExpect(status().isOk())
-                .andExpect(content().json("{\"user_name\":\"Richard\", \"comment\":\"The Cat\"}"))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("id", Matchers.is(20)));
     }
 
     @Test

@@ -63,7 +63,7 @@ public class CurrencyControllerTest {
     }
 
     @Test
-    public void testCreateCurrency() throws Exception {
+    public void testAddNewCurrency() throws Exception {
         mvc.perform(post("/currencies/add")
                 .accept(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(currencyEur))
@@ -98,15 +98,28 @@ public class CurrencyControllerTest {
 
     @Test
     public void testDeleteCurrencyById() throws Exception {
-        mvc.perform(delete("/currencies/delete/{id}", 2))
+        mvc.perform(delete("/currencies/delete/{id}", 9))
                 .andExpect(status().isNoContent());
     }
 
     @Test
-    public void testGetCurrencyIdNotExist() throws Exception {
+    public void testDeleteCurrencyByIdNotExist() throws Exception {
+        mvc.perform(delete("/currencies/delete/{id}", 3))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testGetCurrencyByIdNotExist() throws Exception {
         mvc.perform(get("/currencies/{id}", 1))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.ticker").doesNotExist());
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("CurrencyNotFound"));
+    }
+
+    @Test
+    public void testGetCurrencyByTickerNotExist() throws Exception {
+        mvc.perform(get("/currencies/ticker/{ticker}", "UAH"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("CurrencyNotFound"));
     }
 
     @Test
@@ -116,6 +129,12 @@ public class CurrencyControllerTest {
     }
 
     @Test
-    public void testPostCurrencyTickerAlreadyExists() {
+    public void testPostCurrencyTickerAlreadyExists() throws Exception {
+        when(service.getCurrencyByTicker(CurrencyTicker.valueOf("EUR"))).thenReturn(Optional.of(currencyEur));
+        mvc.perform(post("/currencies/add")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(currencyEur))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isConflict());
     }
 }
