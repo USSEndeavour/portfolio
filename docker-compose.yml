@@ -1,0 +1,25 @@
+version: "3.8"
+services:
+  server:
+    build: .
+    restart: always
+    ports:
+      - 8080:8080
+    depends_on:
+      - mysqldb
+  mysqldb:
+    platform: linux/x86_64
+    image: "mysql:8.0"
+    restart: always
+    ports:
+      - 3307:3306
+    environment:
+      MYSQL_DATABASE: portfoliodb
+      MYSQL_USER: vasyl
+      MYSQL_PASSWORD: vasyl1979
+      MYSQL_ROOT_PASSWORD: vasyl1979
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u", "vasyl", "-pvasyl1979" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5

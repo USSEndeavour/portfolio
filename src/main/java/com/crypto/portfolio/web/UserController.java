@@ -75,7 +75,7 @@ public class UserController {
         existingUser.setUserRole(user.getUserRole());
         existingUser.setTelegramGroupId(user.getTelegramGroupId());
         service.saveUser(existingUser);
-        return ResponseEntity.ok(existingUser);
+        return ResponseEntity.status(HttpStatus.OK).body(existingUser);
     }
 
     @GetMapping

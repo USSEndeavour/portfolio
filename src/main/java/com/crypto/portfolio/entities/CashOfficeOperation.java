@@ -64,6 +64,8 @@ public class CashOfficeOperation {
     @Column(name = "sender_id")
     private Long requestSenderTelegramId;
 
+    private LocalDateTime completionTime;
+
     public Long getRequestSenderTelegramId() {
         return requestSenderTelegramId;
     }
@@ -79,8 +81,6 @@ public class CashOfficeOperation {
     public void setRequestMessageGroupId(Long requestMessageGroupId) {
         this.requestMessageGroupId = requestMessageGroupId;
     }
-
-    private LocalDateTime completionTime;
 
     public void setRequestMessageId(Long requestMessageId) {
         this.requestMessageId = requestMessageId;

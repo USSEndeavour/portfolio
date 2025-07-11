@@ -133,7 +133,7 @@ public class ManagerBotServiceImpl implements ManagerBotService {
     public Predicate<String> tickerIsValid = (ticker) -> {
         boolean flag = false;
         try {
-            flag = !(findCurrencyByTicker(ticker).equals(null));
+            flag = (findCurrencyByTicker(ticker) != null);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -143,7 +143,7 @@ public class ManagerBotServiceImpl implements ManagerBotService {
     public Predicate<String> operationCodeIsValid = (code) -> {
         boolean flag = false;
         try {
-            flag = !(findCurrencyByTicker(code).equals(null));
+            flag = findCurrencyByTicker(code) != null;
         } catch (Exception e) {
             e.printStackTrace();
         }
