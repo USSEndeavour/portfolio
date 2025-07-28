@@ -1,0 +1,6 @@
+com/crypto/portfolio/web/UserControllerTest.class
+com/crypto/portfolio/PortfolioApplicationTests.class
+com/crypto/portfolio/web/CashOfficeOperationControllerTest.class
+com/crypto/portfolio/services/CurrencyServiceTest.class
+com/crypto/portfolio/web/CurrencyControllerTest.class
+com/crypto/portfolio/services/HolderServiceTest.class
