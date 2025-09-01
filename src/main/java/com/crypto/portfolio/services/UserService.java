@@ -1,16 +1,24 @@
 package com.crypto.portfolio.services;
 
+import com.crypto.portfolio.entities.CashOfficeOperation;
 import com.crypto.portfolio.entities.User;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.crypto.portfolio.repositories.UserRepository;
+import org.springframework.web.client.RestTemplate;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.lang.Iterable;
 
 @Service
 public class UserService {
+
+    private RestTemplate defaultClient = new RestTemplate();
+
+    private String updateUserById = "http://localhost:8080/users/update/{id}";
 
     private UserRepository repository;
 
@@ -27,8 +35,8 @@ public class UserService {
         return repository.findById(id);
     }
 
-    public Optional<User> getUserByTelegramId(Long id) {
-        return repository.findByTelegramId(id);
+    public Optional<User> getUserByTelegramUserName(String telegramUserName) {
+        return repository.findByTelegramUserName(telegramUserName);
     }
 
     public Optional<User> getUserByUserName(String userName) {
@@ -42,5 +50,4 @@ public class UserService {
     public void deleteUserById(Integer id) {
         repository.deleteById(id);
     }
-
 }

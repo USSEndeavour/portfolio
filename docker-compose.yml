@@ -1,25 +1,27 @@
-version: "3.8"
 services:
-  server:
-    build: .
-    restart: always
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
-      - 8080:8080
-    depends_on:
-      - mysqldb
-  mysqldb:
-    platform: linux/x86_64
-    image: "mysql:8.0"
-    restart: always
-    ports:
-      - 3307:3306
+      - "8080:8080"
     environment:
-      MYSQL_DATABASE: portfoliodb
-      MYSQL_USER: vasyl
-      MYSQL_PASSWORD: vasyl1979
-      MYSQL_ROOT_PASSWORD: vasyl1979
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/app
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+
+  mysql-db:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: app
+    ports:
+      - "3307:3306"
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u", "vasyl", "-pvasyl1979" ]
+      test: [ "CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$${DB_PASSWORD}" ]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10

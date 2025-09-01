@@ -34,9 +34,9 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @GetMapping("/telegramId/{telegramId}")
-    public ResponseEntity<?> getUserByTelegramId(@PathVariable Long telegramId) {
-        Optional<User> user = service.getUserByTelegramId(telegramId);
+    @GetMapping("/telegramUserName/{telegramUserName}")
+    public ResponseEntity<?> getUserByTelegramUserName(@PathVariable String telegramUserName) {
+        Optional<User> user = service.getUserByTelegramUserName(telegramUserName);
         if (user.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("UserNotFound");
         }
@@ -54,7 +54,7 @@ public class UserController {
 
     @PostMapping("/add")
     public ResponseEntity<?> addUser(@RequestBody User user) {
-        if (!service.getUserByTelegramId(user.getTelegramId()).isEmpty()) {
+        if (!service.getUserByTelegramUserName(user.getTelegramUserName()).isEmpty()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("The user already exists.");
         }
         User savedUser = service.saveUser(user);
@@ -69,11 +69,11 @@ public class UserController {
         }
         User existingUser = userById.get();
         existingUser.setName(user.getName());
-        existingUser.setTelegramId(user.getTelegramId());
+//        existingUser.setTelegramId(user.getTelegramId());
         existingUser.setTelegramUserName(user.getTelegramUserName());
         existingUser.setComment(user.getComment());
         existingUser.setUserRole(user.getUserRole());
-        existingUser.setTelegramGroupId(user.getTelegramGroupId());
+//        existingUser.setTelegramGroupId(user.getTelegramGroupId());
         service.saveUser(existingUser);
         return ResponseEntity.status(HttpStatus.OK).body(existingUser);
     }

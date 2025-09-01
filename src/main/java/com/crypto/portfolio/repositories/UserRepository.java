@@ -6,6 +6,7 @@ import com.crypto.portfolio.entities.User;
 import java.util.Optional;
 
 public interface UserRepository extends CrudRepository<User, Integer> {
-    Optional<User> findByTelegramId(Long telegramId);
+//    Optional<User> findByTelegramId(Long telegramId);
+    Optional<User> findByTelegramUserName(String telegramUserName);
     Optional<User> findByName(String name);
 }

@@ -1,14 +1,23 @@
 package com.crypto.portfolio.web;
 
+import com.crypto.portfolio.entities.User;
+import com.crypto.portfolio.utils.cashofficeoperation.OperationStatus;
+import com.crypto.portfolio.utils.cashofficeoperation.OperationType;
+import org.hibernate.dialect.function.LpadRpadPadEmulation;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.crypto.portfolio.services.CashOfficeOperationService;
 import com.crypto.portfolio.entities.CashOfficeOperation;
 
+import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 import java.lang.Iterable;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping("/cashofficeoperations")
@@ -46,13 +55,13 @@ public class CashOfficeOperationController {
             cashOfficeOperation.setCashOffice(operation.getCashOffice());
             cashOfficeOperation.setOperationType(operation.getOperationType());
             cashOfficeOperation.setOperationPasscode(operation.getOperationPasscode());
-            cashOfficeOperation.setClient(operation.getClient());
+            cashOfficeOperation.setUser(operation.getUser());
             cashOfficeOperation.setCurrency(operation.getCurrency());
             cashOfficeOperation.setOperationQuantity(operation.getOperationQuantity());
             cashOfficeOperation.setOperationStatus(operation.getOperationStatus());
             cashOfficeOperation.setRequestMessageId(operation.getRequestMessageId());
             cashOfficeOperation.setRequestMessageGroupId(operation.getRequestMessageGroupId());
-            cashOfficeOperation.setRequestSenderTelegramId(operation.getRequestSenderTelegramId());
+//            cashOfficeOperation.setRequestSenderTelegramId(operation.getRequestSenderTelegramId());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -68,5 +77,10 @@ public class CashOfficeOperationController {
     @GetMapping
     public Iterable<CashOfficeOperation> getAllCashOfficeOperations() {
         return service.getAllCashOfficeOperations();
+    }
+
+    @GetMapping("/balance/{userId}/{currencyId}")
+    public BigDecimal getUserBalance(@PathVariable Integer userId, @PathVariable Integer currencyId){
+        return service.getUserBalanceByIdAndCurrencyId(userId, currencyId);
     }
 }

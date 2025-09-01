@@ -23,7 +23,9 @@ public class CashOfficeOperation {
     @JoinColumn(name = "cash_office_id", foreignKey = @ForeignKey(name = "cash_office_id_fk"))
     private CashOffice cashOffice;
 
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "operation_type")
+    @JsonProperty("operation_type")
     private OperationType operationType;
 
     // a value, provided by the cashier
@@ -32,8 +34,8 @@ public class CashOfficeOperation {
     private String operationPasscode;
 
     @ManyToOne
-    @JoinColumn(name = "holder_id", foreignKey = @ForeignKey(name = "client_id_fk"))
-    private User client;
+    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "user_id_fk"))
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "currency_id", foreignKey = @ForeignKey(name = "currency_id_fk"))
@@ -41,6 +43,7 @@ public class CashOfficeOperation {
 
     // the amount of money to cash in/out
     @Column(name = "operation_quantity")
+    @JsonProperty("operation_quantity")
     private BigDecimal operationQuantity;
 
     public Long getRequestMessageId() {
@@ -48,6 +51,8 @@ public class CashOfficeOperation {
     }
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "operation_status")
+    @JsonProperty("operation_status")
     private OperationStatus operationStatus;
 
     @CreationTimestamp
@@ -60,19 +65,19 @@ public class CashOfficeOperation {
     @Column(name = "request_group_id")
     private Long requestMessageGroupId;
 
-    @JsonProperty("sender_id")
-    @Column(name = "sender_id")
-    private Long requestSenderTelegramId;
+//    @JsonProperty("sender_id")
+//    @Column(name = "sender_id")
+//    private Long requestSenderTelegramId;
 
     private LocalDateTime completionTime;
 
-    public Long getRequestSenderTelegramId() {
-        return requestSenderTelegramId;
-    }
-
-    public void setRequestSenderTelegramId(Long requestSenderTelegramId) {
-        this.requestSenderTelegramId = requestSenderTelegramId;
-    }
+//    public Long getRequestSenderTelegramId() {
+//        return requestSenderTelegramId;
+//    }
+//
+//    public void setRequestSenderTelegramId(Long requestSenderTelegramId) {
+//        this.requestSenderTelegramId = requestSenderTelegramId;
+//    }
 
     public Long getRequestMessageGroupId() {
         return requestMessageGroupId;
@@ -118,12 +123,12 @@ public class CashOfficeOperation {
         this.operationPasscode = operationPasscode;
     }
 
-    public User getClient() {
-        return client;
+    public User getUser() {
+        return user;
     }
 
-    public void setClient(User client) {
-        this.client = client;
+    public void setUser(User client) {
+        this.user = client;
     }
 
     public Currency getCurrency() {

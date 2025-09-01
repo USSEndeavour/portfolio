@@ -1,12 +1,7 @@
-FROM eclipse-temurin:17-jdk
+FROM openjdk:17
 
-# Add wait script
-COPY wait-for-it.sh /wait-for-it.sh
-RUN chmod +x /wait-for-it.sh
+ADD target/*.jar app.jar
 
-# Copy your app
-ARG JAR_FILE=target/*.jar
-COPY ${JAR_FILE} app.jar
+EXPOSE 8080
 
-# Wait for DB, then run app
-ENTRYPOINT ["/wait-for-it.sh", "mysqldb:3306", "--timeout=30", "--", "java", "-jar", "/app.jar"]
+ENTRYPOINT ["java","-jar","app.jar"]

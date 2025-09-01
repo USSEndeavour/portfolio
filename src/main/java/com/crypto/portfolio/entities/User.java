@@ -3,6 +3,7 @@ package com.crypto.portfolio.entities;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import jakarta.validation.constraints.NotNull;
@@ -27,16 +28,17 @@ public class User {
     @Column(name = "time_created")
     private LocalDateTime creationTime;
 
-    @NaturalId
-    @JsonProperty("telegram_id")
-    @Column(name = "telegram_id", unique = true)
-    private Long telegramId;
+//    @NaturalId
+//    @JsonProperty("telegram_id")
+//    @Column(name = "telegram_id", unique = true)
+//    private Long telegramId;
 
     @JsonProperty("telegram_user_name")
     @Column(name = "telegram_user_name", unique = true)
     private String telegramUserName;
 
-    @Column(name = "notes")
+    @Column(name = "comment")
+    @JsonProperty("comment")
     private String comment;
 
     @NotNull
@@ -44,18 +46,18 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
 
-    @NotNull
-    @JsonProperty("telegram_group_id")
-    @Column(name = "telegram_group_id")
-    private Long telegramGroupId;
+//    @NotNull
+//    @JsonProperty("telegram_group_id")
+//    @Column(name = "telegram_group_id")
+//    private Long telegramGroupId;
 
-    public Long getTelegramId() {
-        return telegramId;
-    }
-
-    public void setTelegramId(Long telegramId) {
-        this.telegramId = telegramId;
-    }
+//    public Long getTelegramId() {
+//        return telegramId;
+//    }
+//
+//    public void setTelegramId(Long telegramId) {
+//        this.telegramId = telegramId;
+//    }
 
     public String getTelegramUserName() {
         return telegramUserName;
@@ -73,13 +75,13 @@ public class User {
         this.userRole = userRole;
     }
 
-    public Long getTelegramGroupId() {
-        return telegramGroupId;
-    }
+//    public Long getTelegramGroupId() {
+//        return telegramGroupId;
+//    }
 
-    public void setTelegramGroupId(Long telegramGroupId) {
-        this.telegramGroupId = telegramGroupId;
-    }
+//    public void setTelegramGroupId(Long telegramGroupId) {
+//        this.telegramGroupId = telegramGroupId;
+//    }
 
     public void setId(Integer id) {
         this.id = id;

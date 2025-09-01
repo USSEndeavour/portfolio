@@ -175,10 +175,10 @@ public class ManagerBotServiceImpl implements ManagerBotService {
         } catch (Exception e) {
             System.err.println(e.getMessage());
         }
-        cashOfficeOperation.setClient(findUserByTelegramId(message.getFrom().getId()));
+        cashOfficeOperation.setUser(findUserByTelegramId(message.getFrom().getId()));
         cashOfficeOperation.setRequestMessageId((long) message.getMessageId());
         cashOfficeOperation.setRequestMessageGroupId(message.getChatId());
-        cashOfficeOperation.setRequestSenderTelegramId(message.getFrom().getId());
+//        cashOfficeOperation.setRequestSenderTelegramId(message.getFrom().getId());
         try {
             ResponseEntity<CashOfficeOperation> operation = defaultClient.exchange(postNewOperationUrl,
                     HttpMethod.POST, new HttpEntity<>(cashOfficeOperation, headers),CashOfficeOperation.class);
